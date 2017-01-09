@@ -1,4 +1,4 @@
-class Portfolio < ApplicationRecord
+class OwnedStock < ApplicationRecord
   belongs_to :user
   belongs_to :stock
 end
