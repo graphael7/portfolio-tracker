@@ -4,11 +4,12 @@ class User < ApplicationRecord
   devise :database_authenticatable, :registerable,
          :recoverable, :rememberable, :trackable, :validatable
 
+
   has_many :owned_stocks
   has_many :stock_tickers, through: :owned_stocks, source: :stock
 
   def generate_portfolio
-    portfolio = {name: "#{self.first_name} #{self.last_name}", stocks: []}
+    portfolio = {name: "#{self.first_name} #{self.last_name}",user_id: self.id, stocks: []}
     portfolio_pnl = 0
     portfolio_cost_basis = 0
     portfolio_total_value = 0
@@ -24,10 +25,10 @@ class User < ApplicationRecord
       stock_data[:company_name] = data_from_api.name
       stock_data[:shares_owned] = owned_stock.shares
       stock_data[:original_price] = owned_stock.original_price
-      stock_data[:original_value] = (stock_data[:shares_owned] * stock_data[:original_price])
-      stock_data[:current_price] = (data_from_api.last_trade_price_only)
-      stock_data[:current_value] = (stock_data[:shares_owned] * data_from_api.last_trade_price_only)
-      stock_data[:current_pnl] = (stock_data[:current_value] - stock_data[:original_value])
+      stock_data[:original_value] = (stock_data[:shares_owned] * stock_data[:original_price]).round(4)
+      stock_data[:current_price] = (data_from_api.last_trade_price_only).round(4)
+      stock_data[:current_value] = (stock_data[:shares_owned] * data_from_api.last_trade_price_only).round(4)
+      stock_data[:current_pnl] = (stock_data[:current_value] - stock_data[:original_value]).round(4)
 
       portfolio_pnl += stock_data[:current_pnl]
       portfolio_cost_basis += stock_data[:original_value]
@@ -35,9 +36,16 @@ class User < ApplicationRecord
       portfolio[:stocks] << stock_data
     end
 
-    portfolio[:portfolio_pnl] = portfolio_pnl
-    portfolio[:portfolio_cost_basis] = portfolio_cost_basis
-    portfolio[:portfolio_total_value] = portfolio_total_value
+    portfolio[:portfolio_pnl] = portfolio_pnl.round(4)
+    portfolio[:portfolio_cost_basis] = portfolio_cost_basis.round(4)
+    portfolio[:portfolio_total_value] = portfolio_total_value.round(4)
     portfolio
   end
+
+  def generate_history(owned_stock)
+    stock = owned_stock.created_at
+    @stock_data = StockQuote::Stock.history(@ticker, @start_date, end_date=Date.today)
+
+  end
+
 end
