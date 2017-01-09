@@ -39,13 +39,19 @@ class User < ApplicationRecord
     portfolio[:portfolio_pnl] = portfolio_pnl.round(4)
     portfolio[:portfolio_cost_basis] = portfolio_cost_basis.round(4)
     portfolio[:portfolio_total_value] = portfolio_total_value.round(4)
+    portfolio[:pnl_history] = generate_pnl_history
     portfolio
   end
 
-  def generate_history(owned_stock)
-    stock = owned_stock.created_at
-    @stock_data = StockQuote::Stock.history(@ticker, @start_date, end_date=Date.today)
-
+  def generate_pnl_history
+    pnl_history = []
+    number_of_days = (Date.today - self.owned_stocks.first.created_at.to_date).to_i
+    historical_portfolio = []
+    while number_of_days > -1
+      buys = OwnedStock.where("DATE(created_at) < ?", Date.today - number_of_days)
+      
+    end
+    historical_portfolio
   end
 
 end
