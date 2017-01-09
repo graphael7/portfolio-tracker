@@ -4,5 +4,6 @@ class User < ApplicationRecord
   devise :database_authenticatable, :registerable,
          :recoverable, :rememberable, :trackable, :validatable
 
-  has_many :por
+  has_many :owned_stocks
+  has_many :stock_tickers, through: :owned_stocks, source: :stock
 end
