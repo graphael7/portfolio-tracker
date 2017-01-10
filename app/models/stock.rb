@@ -30,4 +30,10 @@ class Stock < ApplicationRecord
     stock_data
   end
 
+  def current_price_of_stock
+    data_from_api = StockQuote::Stock.quote(self.ticker)
+    data_from_api.last_trade_price_only
+
+  end
+
 end
