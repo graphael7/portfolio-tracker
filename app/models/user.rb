@@ -7,6 +7,7 @@ class User < ApplicationRecord
   has_many :owned_stocks
 
   def generate_portfolio
+    # Generates a hash representing a user's portfolio
     portfolio = {name: "#{self.first_name} #{self.last_name}",user_id: self.id, stocks: []}
     portfolio_pnl = 0
     portfolio_cost_basis = 0
@@ -37,32 +38,48 @@ class User < ApplicationRecord
     portfolio[:portfolio_pnl] = portfolio_pnl.round(4)
     portfolio[:portfolio_cost_basis] = portfolio_cost_basis.round(4)
     portfolio[:portfolio_total_value] = portfolio_total_value.round(4)
-    portfolio[:history] = generate_portfolio_history
     portfolio
   end
 
   def generate_portfolio_history
-    pnl_history = []
-    number_of_days = (Date.today - self.owned_stocks.first.created_at.to_date).to_i
+
+    # Returns a hash representing a user's portfolio history, since their first buy, structured like this:
+    # [
+    #   { date: Date,
+    #     daily_total_value: that day's total portfolio value,
+    #     daily_total_pnl: that day's total profits & losses,
+    #     portfolio: [
+    #       {ticker: stock ticker name, shares: number of shares in a buy, original_price: price of stock when bought}
+    #     ]
+    #   }
+    # ]
+
+    number_of_days_since_first_buy = (Date.today - self.owned_stocks.first.created_at.to_date).to_i
     historical_portfolio = []
-    while number_of_days > 0
-      date = Date.today - number_of_days
+
+    while number_of_days_since_first_buy > 0
+      date = Date.today - number_of_days_since_first_buy
+
+      # Only computes values if stock market was open that day
       if trading_day?(date)
+        # initialize hash for each day
         daily = {}
         daily[:date] = date
         daily[:portfolio] = []
-        daily[:overall_value] = 0
-        daily[:total_pnl] = 0
+        daily[:daily_total_value] = 0
+        daily[:daily_total_pnl] = 0
+
+        # Iterate through that day's portfolio and generate historical data
         buys = OwnedStock.where("DATE(created_at) < ?", date)
         buys.each do |buy|
           daily[:portfolio] << {ticker: buy.stock.ticker, shares: buy.shares, original_price: buy.original_price}
           stock_historical_value = StockQuote::Stock.history(buy.stock.ticker, date, date).first.adj_close
-          daily[:overall_value] += (stock_historical_value * buy.shares)
-          daily[:total_pnl] += (daily[:overall_value] - (buy.shares * buy.original_price))
+          daily[:daily_total_value] += (stock_historical_value * buy.shares)
+          daily[:daily_total_pnl] += (daily[:daily_total_value] - (buy.shares * buy.original_price))
           historical_portfolio << daily
         end
       end
-      number_of_days -= 1
+      number_of_days_since_first_buy -= 1
     end
     historical_portfolio
   end
@@ -70,4 +87,6 @@ class User < ApplicationRecord
   def trading_day?(date)
     StockQuote::Stock.history("FB",date,date).class == Array
   end
+
+
 end
