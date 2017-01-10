@@ -4,9 +4,7 @@ class User < ApplicationRecord
   devise :database_authenticatable, :registerable,
          :recoverable, :rememberable, :trackable, :validatable
 
-
   has_many :owned_stocks
-  has_many :stock_tickers, through: :owned_stocks, source: :stock
 
   def generate_portfolio
     portfolio = {name: "#{self.first_name} #{self.last_name}",user_id: self.id, stocks: []}
