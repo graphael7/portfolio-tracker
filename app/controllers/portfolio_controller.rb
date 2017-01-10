@@ -1,11 +1,11 @@
 class PortfolioController < ApplicationController
   before_action :validate_authenticity_token
 
-
   def show
-    @user = User.find(params[:id])
-    @portfolio = @user.generate_portfolio
-    render json: @portfolio
+    user = User.find_by(authentication_token: params[:authentication_token])
+    binding.pry
+    portfolio = user.generate_portfolio
+    render json: portfolio
   end
 
   def history

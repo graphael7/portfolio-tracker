@@ -10,6 +10,10 @@ class User < ApplicationRecord
     self.authentication_token = generate_authentication_token
   end
 
+  def remove_authentication_token
+    self.authentication_token = nil
+  end
+
   def generate_portfolio
     # Generates a hash representing a user's portfolio
     portfolio = {name: "#{self.first_name} #{self.last_name}",user_id: self.id, stocks: []}
