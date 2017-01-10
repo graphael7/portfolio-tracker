@@ -6,6 +6,10 @@ class User < ApplicationRecord
 
   has_many :owned_stocks
 
+  def set_new_authentication_token
+    self.authentication_token = generate_authentication_token
+  end
+
   def generate_portfolio
     # Generates a hash representing a user's portfolio
     portfolio = {name: "#{self.first_name} #{self.last_name}",user_id: self.id, stocks: []}
@@ -86,6 +90,15 @@ class User < ApplicationRecord
 
   def trading_day?(date)
     StockQuote::Stock.history("FB",date,date).class == Array
+  end
+
+   private
+
+  def generate_authentication_token
+    loop do
+      token = Devise.friendly_token
+      break token unless User.where(authentication_token: token).first
+    end
   end
 
 end

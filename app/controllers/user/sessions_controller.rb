@@ -9,19 +9,15 @@ class User::SessionsController < Devise::SessionsController
 
   # POST /resource/sign_in
   def create
-    super
-    build_resource
-    resource = User.find_for_database_authentication(login: params[:email][:login])
-    if resource.nil?
-      render :json => {:success=>false, :message=>"Error with your login or password"}, :status=>401
+    # binding.pry
+    user = User.find_by(email: params[:email])
+    if user.valid_password?(params[:password])
+      user.set_new_authentication_token
+      render :json=> user.as_json(:auth_token=>user.authentication_token, :email=>user.email), :status=>201
+    else
+      # Error Handling
     end
 
-    if resource.valid_password?(params[:email][:password])
-      sign_in("user", resource)
-      render :json=> {:success=>true, :auth_token=>resource.authentication_token, :login=>resource.login, :email=>resource.email}
-    else
-      render :json=> {:success=>false, :message=>"Error with your login or password"}, :status=>401
-    end
   end
 
   # DELETE /resource/sign_out

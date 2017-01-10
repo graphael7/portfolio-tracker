@@ -1,8 +1,7 @@
 class PortfolioController < ApplicationController
+  before_action :validate_authenticity_token
 
-  def static
-  end
-  
+
   def show
     @user = User.find(params[:id])
     @portfolio = @user.generate_portfolio

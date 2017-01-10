@@ -5,6 +5,11 @@ class ApplicationController < ActionController::Base
 
   protected
 
+  def validate_authenticity_token
+    user = User.find_by(email: params[:email])
+    user.authentication_token == params[:authentication_token]
+  end
+
   def configure_permitted_parameters
     devise_parameter_sanitizer.permit(:sign_up, keys: [:first_name, :last_name, :email, :password])
   end

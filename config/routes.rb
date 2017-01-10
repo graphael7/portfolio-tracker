@@ -1,6 +1,5 @@
 Rails.application.routes.draw do
-  devise_for :users
-  # , controllers: { sessions: 'user/sessions' }
+  devise_for :users, controllers: { sessions: 'user/sessions' }
 
   root to: 'portfolio#static'
 
