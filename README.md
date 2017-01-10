@@ -1,24 +1,11 @@
-# README
+# Portfolio Tracker API
 
-This README would normally document whatever steps are necessary to get the
-application up and running.
+Welcome to the public interface for Portfolio Tracker.
 
-Things you may want to cover:
+You can use the following routes to get data from our server:
 
-* Ruby version
+* GET `portfolio-tracker-backend.herokuapp.com/users/{user-id}/portfolio` -- Returns a JSON object that contains the up-to-the-second values of the stocks in a user's portfolio, as well as overall performance of the portfolio.
 
-* System dependencies
+* GET `portfolio-tracker-backend.herokuapp.com/users/{user-id}/portfolio/history` -- Returns a JSON object that contains the performance history of a user's portfolio by day, for each day since the user's first buy.
 
-* Configuration
-
-* Database creation
-
-* Database initialization
-
-* How to run the test suite
-
-* Services (job queues, cache servers, search engines, etc.)
-
-* Deployment instructions
-
-* ...
+* GET `portfolio-tracker-backend.herokuapp.com/stocks/{stock-id}` - Returns a JSON object of a stock's current performance, as well as its historical performance.
