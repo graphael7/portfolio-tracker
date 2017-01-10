@@ -5,4 +5,5 @@ Rails.application.routes.draw do
   get 'users/:id/portfolio/history', to: 'portfolio#history'
   
   get '/stocks/:id', to: 'stock#show'
+  post '/users/:user_id/stocks/:id', to: 'stock#create'
 end

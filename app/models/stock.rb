@@ -10,6 +10,9 @@ class Stock < ApplicationRecord
     stock_data = {}
     data_from_api = StockQuote::Stock.quote(self.ticker)
     stock_data[:id] = self.id
+    stock_data[:bid] = (data_from_api.bid)
+    stock_data[:ask] = (data_from_api.ask)
+    stock_data[:companyname] = (data_from_api.name)
     stock_data[:symbol] = (data_from_api.symbol)
     stock_data[:bid_realtime] = (data_from_api.bid_realtime)
     stock_data[:ask_realtime] = (data_from_api.ask_realtime)
@@ -25,9 +28,15 @@ class Stock < ApplicationRecord
     stock_data[:pe_ratio] = (data_from_api.pe_ratio)
     stock_data[:pe_ratio_realtime] = (data_from_api.pe_ratio_realtime)
     stock_data[:volume] = (data_from_api.volume)
-    stock_data[:history] = StockQuote::Stock.history(self.ticker, 1.month.ago.to_datetime, Date.today)
+    stock_data[:history] = StockQuote::Stock.history(self.ticker, 1.year.ago.to_datetime, Date.today)
 
     stock_data
+  end
+
+  def current_price_of_stock
+    data_from_api = StockQuote::Stock.quote(self.ticker)
+    data_from_api.last_trade_price_only
+
   end
 
 end
