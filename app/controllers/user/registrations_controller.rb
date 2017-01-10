@@ -9,7 +9,6 @@ before_action :configure_sign_up_params, only: [:create]
 
   # POST /resource
   def create
-    super
     user = User.new(params[:user])
     binding.pry
     if user.save
@@ -32,9 +31,9 @@ before_action :configure_sign_up_params, only: [:create]
   # end
 
   # DELETE /resource
-  def destroy
-    sign_out(resource_name)
-  end
+  # def destroy
+  #   sign_out(resource_name)
+  # end
 
   # GET /resource/cancel
   # Forces the session data which is usually expired after sign
