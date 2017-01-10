@@ -88,5 +88,4 @@ class User < ApplicationRecord
     StockQuote::Stock.history("FB",date,date).class == Array
   end
 
-
 end

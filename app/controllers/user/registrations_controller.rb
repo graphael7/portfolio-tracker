@@ -1,6 +1,6 @@
 class User::RegistrationsController < Devise::RegistrationsController
 before_action :configure_sign_up_params, only: [:create]
-before_action :configure_account_update_params, only: [:update]
+# before_action :configure_account_update_params, only: [:update]
 
   # GET /resource/sign_up
   # def new
@@ -8,9 +8,18 @@ before_action :configure_account_update_params, only: [:update]
   # end
 
   # POST /resource
-  # def create
-  #   super
-  # end
+  def create
+    super
+    user = User.new(params[:user])
+    binding.pry
+    if user.save
+      render :json => user.as_json(:auth_token =>user.authentication_token, :email =>user.email), :status => 201
+      return
+    else
+      warden.custom_failure!
+      render :json => user.errors, :status=>422
+    end
+  end
 
   # GET /resource/edit
   # def edit
@@ -23,9 +32,9 @@ before_action :configure_account_update_params, only: [:update]
   # end
 
   # DELETE /resource
-  # def destroy
-  #   super
-  # end
+  def destroy
+    sign_out(resource_name)
+  end
 
   # GET /resource/cancel
   # Forces the session data which is usually expired after sign
@@ -41,6 +50,16 @@ before_action :configure_account_update_params, only: [:update]
   # If you have extra params to permit, append them to the sanitizer.
   def configure_sign_up_params
     devise_parameter_sanitizer.permit(:sign_up, keys: [:first_name, :last_name, :email, :password])
+  end
+
+  def ensure_params_exist
+    return unless params[:email].blank?
+    render :json=>{:success=>false, :message=>"missing user_login parameter"}, :status=>422
+  end
+
+  def invalid_login_attempt
+    warden.custom_failure!
+    render :json=> {:success=>false, :message=>"Error with your login or password"}, :status=>401
   end
 
   # If you have extra params to permit, append them to the sanitizer.
