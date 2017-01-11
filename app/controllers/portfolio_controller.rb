@@ -1,5 +1,4 @@
 class PortfolioController < ApplicationController
-  # before_action :validate_authenticity_token
 
   def show
     user = User.find_by(authentication_token: params[:authentication_token])
