@@ -9,9 +9,9 @@ class User::RegistrationsController < Devise::RegistrationsController
 
   # POST /resource
   def create
-    user = User.new(params[:user])
-    binding.pry
+    user = User.new(sign_up_params)
     if user.save
+      user.set_new_authentication_token
       render :json => user.as_json, :status => 201
       return
     else
