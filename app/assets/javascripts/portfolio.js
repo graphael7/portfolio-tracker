@@ -12,3 +12,9 @@
 // })
 //
 // (:auth_token=>user.authentication_token)
+// $.ajax({  url: '/users',
+//   method: 'post',
+//   data: {first_name: 'Albert', last_name: 'F', password: 'password', password_confirmation:'password', email: 'a@e.com'}
+//  }).done(function(response){
+//    console.log(response)
+// })
