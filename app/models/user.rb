@@ -7,11 +7,11 @@ class User < ApplicationRecord
   has_many :owned_stocks
 
   def set_new_authentication_token
-    self.authentication_token = generate_authentication_token
+    self.update_attributes(authentication_token: generate_authentication_token)
   end
 
   def remove_authentication_token
-    self.authentication_token = nil
+    self.update_attributes(authentication_token: nil)
   end
 
   def generate_portfolio

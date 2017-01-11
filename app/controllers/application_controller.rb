@@ -6,11 +6,10 @@ class ApplicationController < ActionController::Base
 
   def validate_authenticity_token
     user = User.find_by(authentication_token: params[:authentication_token])
-    binding.pry
     user.authentication_token == params[:authentication_token]
   end
 
   def configure_permitted_parameters
-    devise_parameter_sanitizer.permit(:sign_up, keys: [:first_name, :last_name, :email, :password])
+    devise_parameter_sanitizer.permit(:sign_up, keys: [:first_name, :last_name])
   end
 end

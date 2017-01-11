@@ -11,11 +11,10 @@ class User::SessionsController < Devise::SessionsController
   # POST /resource/sign_in
   # create finds user by email and assigns auth_token, returns user object with token
   def create
-    user = User.find_by(email: params[:email])
-    if user.valid_password?(params[:password])
+    user = User.find_by(email: params[:user][:email])
+    if user.valid_password?(params[:user][:password])
       user.set_new_authentication_token
-      binding.pry
-      render :json=> user.as_json(:auth_token=>user.authentication_token), :status=>201
+      render :json => user.as_json, :status=>201
     else
       warden.custom_failure!
       render :json=> user.errors, :status=>422
@@ -25,9 +24,10 @@ class User::SessionsController < Devise::SessionsController
 
   # DELETE /resource/sign_out
   def destroy
-    user = User.find_by(email: params[:email])
-    user.authentication_token = nil
-    user.save
+    user = User.find_by(authentication_token: params[:authentication_token])
+    user.remove_authentication_token
+    session.clear
+    render :json => {:success=>true, message:"You logged out!"}
   end
 
   protected
